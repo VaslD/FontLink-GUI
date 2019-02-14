@@ -22,13 +22,13 @@ I'm sorry there actually aren't any "汉字" in the screenshots, so just compare
 
 <img width="480" alt="File Explorer Screenshot 2" src="https://user-images.githubusercontent.com/3415065/52777235-43062700-307e-11e9-8a37-9051bbd04026.png">
 
-You can clearly see that the fonts for CJK characters are changed, while the English texts remains ~~Times New Roman~~ Segoe UI.
+You can clearly see that the fonts for CJK characters are changed, while the English text remains ~~Times New Roman~~ Segoe UI.
 
 ## Cool. Why do I need it again?
 
 You probably don't if your daily routine only deals with languages that use the same character set. If you speak more than one language and frequently works with filenames in more than one language, you may want to fine tune the fallback order of fonts.
 
-FontLink is toally harmless. It doesn't change the font Windows uses globally; nor does it hijack rendering APIs. It's a pretty neat feature that's already working transparently in modern versions of Windows. There's simply no way to change the default setting in a regular user's point of view.
+FontLink is totally harmless. It doesn't change the font Windows uses globally; nor does it hijack rendering APIs. It's a pretty neat feature that's already working transparently in modern versions of Windows. There's simply no way to change the default setting in a regular user's point of view.
 
 Now with this intuitive tool, you can!
 
@@ -45,3 +45,4 @@ If you're worried, check the source code for virus. If you don't code, ask some 
 ## License?
 
 Free-for-all, unless otherwise specified. It's really just a registry reader/writer, nothing special.
+
