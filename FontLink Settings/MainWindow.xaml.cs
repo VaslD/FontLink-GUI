@@ -7,6 +7,8 @@ using System.Security;
 using System.Windows;
 using System.Windows.Controls;
 
+using FontLinkSettings.Utilities;
+
 using Microsoft.Win32;
 
 using Ookii.Dialogs.Wpf;
@@ -18,7 +20,7 @@ namespace FontLinkSettings
         private RegistryKey                            _parent;
         private ObservableCollection<FontLinkFallback> _fallbacks;
 
-        public void ShowErrorDialog(String heading, String body)
+        public void ShowErrorDialog(String heading, String body, Boolean allowElevation = false)
         {
             var dialog = new TaskDialog
                          {
@@ -26,17 +28,47 @@ namespace FontLinkSettings
                              MainIcon                = TaskDialogIcon.Error,
                              WindowTitle             = "FontLink Settings",
                              MainInstruction         = heading,
-                             Content = body                +
-                                       Environment.NewLine +
-                                       Environment.NewLine +
-                                       "Try restart the application as administrator.",
-                             ButtonStyle = TaskDialogButtonStyle.Standard,
+                             Content = body +
+                                       (allowElevation
+                                            ? Environment.NewLine +
+                                              Environment.NewLine +
+                                              "Try restart the application as administrator."
+                                            : String.Empty),
+                             ButtonStyle = allowElevation
+                                               ? TaskDialogButtonStyle.CommandLinks
+                                               : TaskDialogButtonStyle.Standard,
                          };
-            dialog.Buttons.Add(new TaskDialogButton
-                               {
-                                   ButtonType = ButtonType.Ok
-                               });
-            dialog.ShowDialog(this);
+
+            if (allowElevation)
+            {
+                dialog.Buttons.Add(new TaskDialogButton
+                                   {
+                                       ButtonType        = ButtonType.Custom,
+                                       Text              = "Run as administrator.",
+                                       CommandLinkNote   = "Verification of login credentials may be required.",
+                                       ElevationRequired = true,
+                                       Default           = false
+                                   });
+                dialog.Buttons.Add(new TaskDialogButton
+                                   {
+                                       ButtonType = ButtonType.Custom,
+                                       Text       = "Go back.",
+                                       Default    = true
+                                   });
+            }
+            else
+            {
+                dialog.Buttons.Add(new TaskDialogButton
+                                   {
+                                       ButtonType = ButtonType.Ok
+                                   });
+            }
+
+            if (dialog.ShowDialog(this).Text.StartsWith("R", StringComparison.InvariantCultureIgnoreCase))
+            {
+                Hide();
+                SecurityHelpers.RestartAsAdmin();
+            }
         }
 
         public void ShowInfoDialog(String heading, String body)
@@ -71,15 +103,13 @@ namespace FontLinkSettings
                              MainIcon                = TaskDialogIcon.Warning,
                              WindowTitle             = "FontLink Settings",
                              MainInstruction         = "FontLinks Are System Settings Saved in the Windows Registry",
-                             Content = "The application will read from the Windows Registry but will not" +
-                                       " perform writes without explicit user interactions."              +
-                                       Environment.NewLine                                                +
-                                       Environment.NewLine                                                +
-                                       "Changing system settings affects all programs and "               +
-                                       "all users on this computer. Please note that "                    +
-                                       "improper configuration may cause issues, "                        +
-                                       "such as jumbled texts, application crashes "                      +
-                                       "and severe system instability. "                                  +
+                             Content = "The application will read from the Windows Registry but will not perform "  +
+                                       "writes without explicit user interactions."                                 +
+                                       Environment.NewLine                                                          +
+                                       Environment.NewLine                                                          +
+                                       "Changing system settings affects all programs and all users on this "       +
+                                       "computer. Please note that improper configuration may cause issues, "       +
+                                       "such as jumbled texts, application crashes and severe system instability. " +
                                        "Do not save any change unless you know what you are doing!",
                              ButtonStyle = TaskDialogButtonStyle.CommandLinks
                          };
@@ -88,8 +118,10 @@ namespace FontLinkSettings
                                    ButtonType = ButtonType.Custom,
                                    Text       = "I understand the risk!",
                                    CommandLinkNote = "Continue to the application." +
-                                                     Environment.NewLine            +
-                                                     "Administrative privilege may be required.",
+                                                     (SecurityHelpers.IsRunningAsAdmin()
+                                                          ? String.Empty
+                                                          : Environment.NewLine +
+                                                            "Administrative privilege may be required."),
                                    Default = false
                                });
             dialog.Buttons.Add(new TaskDialogButton
@@ -117,7 +149,7 @@ namespace FontLinkSettings
             catch (SecurityException exception)
             {
                 ShowErrorDialog("System.SecurityException",
-                                exception.Message);
+                                exception.Message, true);
                 Close();
             }
 
@@ -162,7 +194,7 @@ namespace FontLinkSettings
             catch (SecurityException exception)
             {
                 ShowErrorDialog("System.SecurityException",
-                                exception.Message);
+                                exception.Message, true);
             }
             catch (IOException exception)
             {
@@ -210,10 +242,11 @@ namespace FontLinkSettings
                          };
             dialog.Buttons.Add(new TaskDialogButton
                                {
-                                   ButtonType      = ButtonType.Custom,
-                                   Text            = "Yes, save to Registry.",
-                                   CommandLinkNote = "The specified Registry key will be modified.",
-                                   Default         = false
+                                   ButtonType        = ButtonType.Custom,
+                                   Text              = "Yes, save to Registry.",
+                                   CommandLinkNote   = "The Registry key above will be modified.",
+                                   Default           = false,
+                                   ElevationRequired = true
                                });
             dialog.Buttons.Add(new TaskDialogButton
                                {
@@ -222,7 +255,7 @@ namespace FontLinkSettings
                                    CommandLinkNote = "I am not ready to risk it."
                                });
 
-            if (!dialog.ShowDialog(this).Text.StartsWith("Yes", StringComparison.InvariantCulture))
+            if (!dialog.ShowDialog(this).Text.StartsWith("Y", StringComparison.InvariantCulture))
             {
                 return;
             }
@@ -247,7 +280,7 @@ namespace FontLinkSettings
             catch (SecurityException exception)
             {
                 ShowErrorDialog("System.SecurityException",
-                                exception.Message);
+                                exception.Message, true);
             }
             catch (IOException exception)
             {

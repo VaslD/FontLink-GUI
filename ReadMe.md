@@ -38,11 +38,10 @@ Drop-down selection with drag-and-drop ordering. Sounds nice?!
 
 ## Anything else to know about?
 
-Depends on the security settings, you may need administrative privilege to make changes. The application starts with non-elevated access by default, and reports error if certain access is denied. No self-elevation provided. You must run it as administrator manually.
+Depends on the security settings, you may need administrative privilege to make changes. The application starts with non-elevated access by default, and reports error if certain access is denied. ~~No self-elevation provided. You must run it as administrator manually.~~
 
 If you're worried, check the source code for virus. If you don't code, ask some friend to check it for you. If you recognize all the words in this section but they don't make sense, you shouldn't use it!
 
 ## License?
 
 Free-for-all, unless otherwise specified. It's really just a registry reader/writer, nothing special.
-
