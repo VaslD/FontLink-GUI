@@ -78,7 +78,3 @@ At step 3, if you frequently mix English with Traditional Chinese characters, yo
 And this is for mixing English with Japanese characters:
 
 <img alt="FontLink Settings screenshot for mixing English with Japanese" src="https://user-images.githubusercontent.com/3415065/73060134-27ccaa00-3ed2-11ea-9b65-681ddfad26a9.png">
-
-## License
-
-Free-for-all, unless otherwise specified. It's really just a registry reader/writer, nothing special.
